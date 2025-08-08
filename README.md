@@ -1,6 +1,7 @@
 # WanderMind
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**WanderMind** is an AI-powered iOS travel companion that provides tourists with instant information, historical facts, and personalized recommendations about landmarks and attractions. Simply type or speak your question, and TourAI responds in real time.
+**WanderMind** is an AI-powered iOS travel companion that provides tourists with instant information, historical facts, and personalized recommendations about landmarks and attractions. Simply type or speak your question, and it responds in real time.
 
 ## Features
 
