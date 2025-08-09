@@ -8,7 +8,7 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            Text("Plan your trip with TourAI !").font(.title3)
+            Text("Plan your trip with WanderMind!").font(.title3)
                 .fontWeight(.bold).fontDesign(.rounded)
             //.font(.system(size: 20, weight: .bold, design: .rounded))
                 .foregroundColor(.primary) // adapts to light/dark mode
@@ -27,13 +27,14 @@ struct ContentView: View {
                                     .foregroundColor(.primary) // Adapts to light/dark mode
                                     .frame(maxWidth: 300, alignment: .trailing)
                             } else {
-                                Text(message.content)
+                                Text(attributedString(for: message.content))
                                     .padding(10)
-                                    .background(Color.secondary.opacity(0.2)) // Secondary for assistant messages
+                                    .background(Color.secondary.opacity(0.2))
                                     .cornerRadius(10)
                                     .foregroundColor(.primary)
                                     .frame(maxWidth: 300, alignment: .leading)
                                 Spacer()
+            
                             }
                         }
                     }
@@ -47,7 +48,11 @@ struct ContentView: View {
                     .frame(height: 50)
                     .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.secondary, lineWidth: 1)) // Secondary for border
                     .focused($isTextEditorFocused)
-                    .background(Color(UIColor.systemBackground)) // Ensure input background adapts
+                    .background(Color(UIColor.systemBackground)).overlay(alignment: .topLeading){
+                        if userInput.isEmpty{
+                            Text("Ask away travel question...").foregroundColor(.secondary).padding(.top,8).padding(.leading,5)
+                        }
+                    } // Ensure input background adapts
                 
                 Button(action: {
                     isTextEditorFocused = false
@@ -69,6 +74,31 @@ struct ContentView: View {
             .padding()
         }
         .background(Color(UIColor.systemBackground)) // Ensure entire view background adapts
+    }
+    
+    private func attributedString(for text: String) -> AttributedString {
+        var attributedString = AttributedString(text)
+        let detector = try? NSRegularExpression(pattern: "(https?://\\S+)", options: [])
+        let range = NSRange(text.startIndex..<text.endIndex, in: text)
+        
+        if let matches = detector?.matches(in: text, options: [], range: range) {
+            for match in matches {
+                // Convert NSRange to String range
+                if let stringRange = Range(match.range, in: text) {
+                    // Convert String range to AttributedString range
+                    let start = AttributedString.Index(stringRange.lowerBound, within: attributedString)!
+                    let end = AttributedString.Index(stringRange.upperBound, within: attributedString)!
+                    let attributedRange = start..<end
+                    
+                    if let url = URL(string: String(text[stringRange])) {
+                        attributedString[attributedRange].link = url
+                        attributedString[attributedRange].foregroundColor = .blue // Optional: style links
+                    }
+                }
+            }
+        }
+        
+        return attributedString
     }
     
     func sendToAI() {
